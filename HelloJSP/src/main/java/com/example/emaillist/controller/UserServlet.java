@@ -34,8 +34,9 @@ public class UserServlet extends HttpServlet {
 			rd.forward(req, resp);
 		} else if ("loginform".equals(actionName)) {
 			//	a=loginform
-			//	로그인 폼 페이지로
-			RequestDispatcher rd = req.getRequestDispatcher("/WEB-INF/views/users/loginform.jsp");
+			//	로그인 폼 페이지로 
+			RequestDispatcher rd =
+				req.getRequestDispatcher("/WEB-INF/views/users/loginform.jsp");
 			rd.forward(req, resp);
 		} else {
 			resp.sendError(404);	//	Page Not Found
@@ -64,6 +65,7 @@ public class UserServlet extends HttpServlet {
 			UserDao dao = new UserDaoImpl();
 			int insertedCount = dao.insert(vo);
 			
+			//	체크
 			if (insertedCount == 1) {
 				//	가입 성공
 				//	-> 성공 페이지로 리다이렉트
@@ -73,10 +75,35 @@ public class UserServlet extends HttpServlet {
 				//	-> 가입 폼으로 리다이렉트
 				resp.sendRedirect(req.getContextPath() + "/users?a=joinform");
 			}
-		} 
-		
+		} else if ("login".equals(actionName)) {
+			//	로그인 수행
+			//	파라미터 확인
+			String email = req.getParameter("email");
+			String password = req.getParameter("password");
+			
+			System.out.printf("로그인 정보: email=%s, password=%s%n", 
+					email, password);
+			
+			UserDao dao = new UserDaoImpl();
+			
+			UserVo vo = dao.getUserByEmailAndPassword(email, password);
+			if (vo == null) {
+				//	사용자 없음 or 비밀번호 틀림
+				System.err.println("사용자 없음!");
+				//	로그인 폼으로 돌아가기
+				resp.sendRedirect(req.getContextPath() + "/users?a=loginform");
+			} else {
+				//	사용자 찾음
+				System.out.println("사용자 발견! " + vo);
+				//	사용자 정보를 서버에 기록(세션)
+				
+				//	홈페이지로 리다이렉트
+				resp.sendRedirect(req.getContextPath());
+			}
+		} else {
+			resp.sendRedirect(req.getContextPath());
+		}
 	}
-	
 	
 	
 }
