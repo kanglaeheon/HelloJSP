@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import com.example.emaillist.vo.UserVo;
 
 public class UserDaoImpl implements UserDao {
-	//	Connection
+	//	Connection 
 	private Connection getConnection() throws SQLException {
 		Connection conn = null;
 		
@@ -20,9 +20,9 @@ public class UserDaoImpl implements UserDao {
 			String dburl = "jdbc:oracle:thin:@localhost:1521:xe";
 			conn = DriverManager.getConnection(dburl, "C##BITUSER", "bituser");
 		} catch (ClassNotFoundException e) {
-			System.err.println("드라이버 로드 실패!");
 			e.printStackTrace();
 		}
+		
 		return conn;
 	}
 	
@@ -42,7 +42,7 @@ public class UserDaoImpl implements UserDao {
 					" WHERE email=? AND password=?";
 			//	준비
 			pstmt = conn.prepareStatement(sql);
-			//	파라미터 바인드
+			//	파라미터 바인딩
 			pstmt.setString(1, email);
 			pstmt.setString(2, password);
 			
@@ -51,7 +51,7 @@ public class UserDaoImpl implements UserDao {
 			
 			if (rs.next()) {
 				//	결과 레코드가 있다
-				//	Vo 생성
+				//	VO 생성
 				Long no = rs.getLong(1);
 				String name = rs.getString(2);
 				String emailStr = rs.getString(3);
@@ -61,11 +61,11 @@ public class UserDaoImpl implements UserDao {
 				vo.setNo(no);
 				vo.setName(name);
 				vo.setEmail(emailStr);
-				vo.getGender();
+				vo.setGender(gender);
 				
 				System.out.println("User Found:" + vo);
 			} else {
-				System.err.println("User Not Found");
+				System.err.println("User Not Found!");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -78,7 +78,6 @@ public class UserDaoImpl implements UserDao {
 				e.printStackTrace();
 			}
 		}
-		
 		return vo;
 	}
 
@@ -92,8 +91,7 @@ public class UserDaoImpl implements UserDao {
 			conn = getConnection();
 			//	실행 계획 준비
 			String sql = "INSERT INTO users (no, name, password, email, gender) " +
-						"VALUES (seq_users_pk.NEXTVAL, ?, ?, ?, ?)";
-			
+					" VALUES(seq_users_pk.NEXTVAL, ?, ?, ?, ?)";
 			pstmt = conn.prepareStatement(sql);
 			//	파라미터 바인딩
 			pstmt.setString(1, vo.getName());
@@ -115,7 +113,5 @@ public class UserDaoImpl implements UserDao {
 		}
 		return insertedCount;
 	}
-	
-	
 
 }
